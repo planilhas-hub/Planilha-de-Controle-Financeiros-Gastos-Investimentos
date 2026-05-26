@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planilha de Controle de Gastos e Investimento | Controle Financeiro</title>
+  <meta name="description" content="Planilha de controle de gastos e investimento com dashboard automático, gráficos e metas financeiras. Controle financeiro completo para organizar seu dinheiro." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===================== RESET & BASE ===================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #0f1f3d;
+      --navy-mid:  #1a3260;
+      --green:     #10b981;
+      --green-dk:  #059669;
+      --gold:      #f59e0b;
+      --gold-lt:   #fef3c7;
+      --white:     #ffffff;
+      --off-white: #f8fafc;
+      --gray-100:  #f1f5f9;
+      --gray-200:  #e2e8f0;
+      --gray-500:  #64748b;
+      --gray-700:  #334155;
+      --gray-900:  #0f172a;
+      --radius:    12px;
+      --shadow:    0 4px 24px rgba(15,31,61,.10);
+      --shadow-lg: 0 12px 48px rgba(15,31,61,.18);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--off-white);
+      color: var(--gray-700);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { max-width: 100%; display: block; }
+    a   { text-decoration: none; color: inherit; }
+
+    /* ===================== UTILITIES ===================== */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .section    { padding: 96px 0; }
+    .section-sm { padding: 64px 0; }
+    .text-center { text-align: center; }
+
+    .tag {
+      display: inline-block;
+      background: var(--gold-lt);
+      color: #92400e;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+
+    h1,h2,h3 { line-height: 1.2; color: var(--gray-900); }
+
+    /* ===================== BUTTONS ===================== */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--green) 0%, var(--green-dk) 100%);
+      color: var(--white);
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 18px 40px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 6px 24px rgba(16,185,129,.35);
+      text-decoration: none;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(16,185,129,.45); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      color: var(--white);
+      font-size: .95rem;
+      font-weight: 600;
+      padding: 14px 32px;
+      border-radius: 100px;
+      border: 2px solid rgba(255,255,255,.35);
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+      text-decoration: none;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.6); }
+
+    /* ===================== TOPBAR ===================== */
+    .topbar {
+      background: var(--navy);
+      color: var(--white);
+      font-size: .82rem;
+      font-weight: 500;
+      text-align: center;
+      padding: 10px 24px;
+      letter-spacing: .02em;
+    }
+    .topbar span { color: var(--gold); font-weight: 700; }
+
+    /* ===================== NAVBAR ===================== */
+    .navbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+    .navbar .inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--navy);
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--green), var(--navy-mid));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .nav-links { display: flex; gap: 32px; font-size: .9rem; font-weight: 500; }
+    .nav-links a { color: var(--gray-700); transition: color .2s; }
+    .nav-links a:hover { color: var(--green-dk); }
+    .nav-cta {
+      background: var(--navy);
+      color: var(--white);
+      font-size: .85rem;
+      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: 100px;
+      transition: background .2s;
+    }
+    .nav-cta:hover { background: var(--navy-mid); }
+
+    /* ===================== HERO ===================== */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, #163b6b 100%);
+      color: var(--white);
+      padding: 100px 0 80px;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16,185,129,.15);
+      border: 1px solid rgba(16,185,129,.3);
+      color: #6ee7b7;
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 900;
+      color: var(--white);
+      margin-bottom: 20px;
+      letter-spacing: -.02em;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--gold), #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,.75);
+      margin-bottom: 36px;
+      max-width: 480px;
+    }
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .hero-price {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .hero-price-old {
+      font-size: .88rem;
+      color: rgba(255,255,255,.45);
+      text-decoration: line-through;
+    }
+    .hero-price-main {
+      font-size: 1rem;
+      color: rgba(255,255,255,.85);
+    }
+    .hero-price-main strong {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #6ee7b7;
+    }
+    .hero-price-badge {
+      background: var(--gold);
+      color: #78350f;
+      font-size: .72rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+    .hero-note {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .82rem;
+      color: rgba(255,255,255,.5);
+      margin-top: 10px;
+    }
+
+    /* Mockup dashboard */
+    .hero-visual {
+      position: relative;
+      perspective: 1200px;
+    }
+    .dashboard-mockup {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255,255,255,.06);
+      overflow: hidden;
+      transform: rotateY(-8deg) rotateX(4deg);
+      transition: transform .4s;
+    }
+    .dashboard-mockup:hover { transform: rotateY(0) rotateX(0); }
+    .db-header {
+      background: var(--navy);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .db-dots { display: flex; gap: 6px; }
+    .db-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .db-dot:nth-child(1) { background: #ff5f57; }
+    .db-dot:nth-child(2) { background: #febc2e; }
+    .db-dot:nth-child(3) { background: #28c840; }
+    .db-title { color: rgba(255,255,255,.6); font-size: .75rem; margin-left: 8px; }
+
+    .db-body { padding: 20px; background: #f8fafc; }
+    .db-cards {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .db-card {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 12px;
+      border: 1px solid var(--gray-200);
+    }
+    .db-card-label { font-size: .6rem; color: var(--gray-500); font-weight: 500; margin-bottom: 4px; }
+    .db-card-val   { font-size: .95rem; font-weight: 800; color: var(--gray-900); }
+    .db-card-val.green { color: var(--green-dk); }
+    .db-card-val.red   { color: #ef4444; }
+    .db-card-val.gold  { color: #d97706; }
+
+    .db-charts {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 12px;
+    }
+    .db-chart-box {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 14px;
+      border: 1px solid var(--gray-200);
+    }
+    .db-chart-title { font-size: .65rem; font-weight: 700; color: var(--gray-700); margin-bottom: 12px; }
+
+    /* Bar chart SVG placeholder */
+    .bar-chart { width: 100%; height: 80px; }
+    /* Pie chart */
+    .pie-chart { width: 80px; height: 80px; margin: 0 auto; }
+
+    .db-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .db-legend-item {
+      display: flex; align-items: center; gap: 4px;
+      font-size: .55rem; color: var(--gray-500);
+    }
+    .db-legend-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+    }
+
+    /* ===================== SOCIAL PROOF BAR ===================== */
+    .proof-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 20px 0;
+    }
+    .proof-items {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .proof-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .9rem;
+      color: var(--gray-700);
+    }
+    .proof-icon {
+      font-size: 1.3rem;
+    }
+    .proof-num {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--gray-900);
+    }
+
+    /* ===================== PROBLEM SECTION ===================== */
+    .problem {
+      background: var(--gray-100);
+      padding: 80px 0;
+    }
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .problem h2 {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+    .pain-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .pain-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      border-left: 4px solid #ef4444;
+    }
+    .pain-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+    .pain-text { font-size: .95rem; color: var(--gray-700); font-weight: 500; }
+
+    .solution-box {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      border-radius: 20px;
+      padding: 40px;
+      color: var(--white);
+      text-align: center;
+    }
+    .solution-emoji { font-size: 3rem; margin-bottom: 16px; }
+    .solution-box h3 { color: var(--white); font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; }
+    .solution-box p  { color: rgba(255,255,255,.75); font-size: .95rem; }
+
+    /* ===================== BENEFITS ===================== */
+    .benefits { background: var(--white); }
+    .benefits h2 {
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .benefits-subtitle { font-size: 1.05rem; color: var(--gray-500); margin-bottom: 56px; max-width: 560px; margin-left: auto; margin-right: auto; }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    .benefit-card {
+      background: var(--off-white);
+      border-radius: 20px;
+      padding: 36px 32px;
+      border: 1px solid var(--gray-200);
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .benefit-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--green), var(--gold));
+      opacity: 0;
+      transition: opacity .25s;
+    }
+    .benefit-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--green); }
+    .benefit-card:hover::before { opacity: 1; }
+
+    .benefit-icon {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+    }
+    .benefit-icon.blue   { background: #dbeafe; }
+    .benefit-icon.green  { background: #d1fae5; }
+    .benefit-icon.purple { background: #ede9fe; }
+    .benefit-icon.gold   { background: #fef3c7; }
+
+    .benefit-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; }
+    .benefit-card p  { font-size: .92rem; color: var(--gray-500); line-height: 1.7; }
+
+    /* feature pills */
+    .feature-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .pill {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 100px;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      padding: 4px 12px;
+    }
+
+    /* ===================== WHAT'S INSIDE ===================== */
+    .inside {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a3260 100%);
+      color: var(--white);
+    }
+    .inside h2 { color: var(--white); font-size: clamp(1.8rem,3vw,2.6rem); font-weight: 800; margin-bottom: 12px; }
+    .inside-subtitle { color: rgba(255,255,255,.65); font-size: 1rem; margin-bottom: 56px; }
+
+    .sheets-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .sheet-card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      padding: 24px 20px;
+      text-align: center;
+      transition: background .25s, transform .25s;
+    }
+    .sheet-card:hover { background: rgba(255,255,255,.10); transform: translateY(-3px); }
+    .sheet-emoji { font-size: 2rem; margin-bottom: 12px; }
+    .sheet-name  { font-weight: 700; font-size: .95rem; margin-bottom: 6px; }
+    .sheet-desc  { font-size: .78rem; color: rgba(255,255,255,.55); line-height: 1.5; }
+
+    /* ===================== TESTIMONIALS ===================== */
+    .testimonials { background: var(--gray-100); }
+    .testimonials h2 { font-size: clamp(1.8rem,3vw,2.6rem); font-weight: 800; margin-bottom: 12px; }
+    .testimonials-sub { color: var(--gray-500); font-size: 1rem; margin-bottom: 56px; }
+
+    .stars { color: var(--gold); font-size: 1rem; letter-spacing: 2px; margin-bottom: 12px; }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .testimonial-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 32px 28px;
+      border: 1px solid var(--gray-200);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .testimonial-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+
+    .testimonial-quote {
+      font-size: .95rem;
+      color: var(--gray-700);
+      line-height: 1.7;
+      flex: 1;
+    }
+    .testimonial-quote::before {
+      content: '"';
+      font-size: 3rem;
+      color: var(--green);
+      font-family: Georgia, serif;
+      line-height: .6;
+      display: block;
+      margin-bottom: 12px;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-top: 1px solid var(--gray-100);
+      padding-top: 20px;
+    }
+    .author-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800;
+      font-size: .9rem;
+      color: var(--white);
+      flex-shrink: 0;
+    }
+    .av-green  { background: linear-gradient(135deg, #10b981, #059669); }
+    .av-blue   { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .av-purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+
+    .author-name  { font-weight: 700; font-size: .9rem; }
+    .author-title { font-size: .78rem; color: var(--gray-500); }
+
+    /* ===================== CTA SECTION ===================== */
+    .cta-section {
+      background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, var(--navy) 100%);
+      color: var(--white);
+      text-align: center;
+      padding: 100px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '💰';
+      position: absolute;
+      font-size: 20rem;
+      opacity: .03;
+      top: -40px;
+      left: -60px;
+      pointer-events: none;
+    }
+    .cta-section h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      color: var(--white);
+      margin-bottom: 16px;
+      letter-spacing: -.02em;
+    }
+    .cta-section p {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,.75);
+      max-width: 560px;
+      margin: 0 auto 40px;
+    }
+
+    .price-box {
+      display: inline-block;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 20px;
+      padding: 36px 56px;
+      margin-bottom: 36px;
+    }
+    .price-old  {
+      font-size: .95rem;
+      color: rgba(255,255,255,.45);
+      text-decoration: line-through;
+      margin-bottom: 4px;
+    }
+    .price-main {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1;
+    }
+    .price-main sup { font-size: 1.5rem; vertical-align: super; }
+    .price-sub  { font-size: .85rem; color: rgba(255,255,255,.55); margin-top: 6px; }
+    .price-badge {
+      background: var(--gold);
+      color: #92400e;
+      font-size: .75rem;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 100px;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    .cta-guarantees {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+    .cta-guarantee {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .85rem;
+      color: rgba(255,255,255,.65);
+    }
+
+    /* ===================== FAQ ===================== */
+    .faq { background: var(--white); }
+    .faq h2 { font-size: clamp(1.8rem,3vw,2.6rem); font-weight: 800; margin-bottom: 12px; }
+    .faq-sub { color: var(--gray-500); margin-bottom: 56px; }
+
+    .faq-list {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .faq-item {
+      background: var(--off-white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .faq-item.open { border-color: var(--green); }
+
+    .faq-q {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      text-align: left;
+      gap: 16px;
+      font-family: 'Inter', sans-serif;
+    }
+    .faq-q-text { font-size: .98rem; font-weight: 600; color: var(--gray-900); }
+    .faq-chevron {
+      width: 28px; height: 28px;
+      background: var(--gray-100);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: transform .25s, background .25s;
+      font-size: .75rem;
+      color: var(--gray-700);
+    }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); background: var(--green); color: var(--white); }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease, padding .25s;
+      padding: 0 24px;
+    }
+    .faq-item.open .faq-a { max-height: 300px; padding: 0 24px 20px; }
+    .faq-a p { font-size: .92rem; color: var(--gray-500); line-height: 1.7; }
+
+    /* ===================== FOOTER ===================== */
+    footer {
+      background: var(--gray-900);
+      color: rgba(255,255,255,.5);
+      text-align: center;
+      padding: 40px 24px;
+      font-size: .85rem;
+    }
+    footer .footer-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 800;
+      color: var(--white);
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+    }
+    footer p { margin-top: 8px; }
+
+    /* ===================== RESPONSIVE ===================== */
+    @media (max-width: 900px) {
+      .hero-grid      { grid-template-columns: 1fr; }
+      .hero-visual    { display: none; }
+      .problem-grid   { grid-template-columns: 1fr; }
+      .benefits-grid  { grid-template-columns: repeat(2, 1fr); }
+      .sheets-grid    { grid-template-columns: repeat(2, 1fr); }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .db-cards       { grid-template-columns: repeat(2,1fr); }
+      .nav-links      { display: none; }
+    }
+    @media (max-width: 600px) {
+      .section { padding: 64px 0; }
+      .sheets-grid { grid-template-columns: 1fr 1fr; }
+      .benefits-grid { grid-template-columns: 1fr; }
+      .proof-items { gap: 24px; }
+      .price-box { padding: 28px 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ TOPBAR ══════════ -->
+<div class="topbar">
+  🔥 Oferta por tempo limitado — <span>67% OFF</span> hoje! Acesso imediato via download
+</div>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<nav class="navbar">
+  <div class="container inner">
+    <div class="logo">
+      <div class="logo-icon">💰</div>
+      Controle Financeiro
+    </div>
+    <div class="nav-links">
+      <a href="#beneficios">Benefícios</a>
+      <a href="#o-que-tem">O Que Inclui</a>
+      <a href="#depoimentos">Depoimentos</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#comprar" class="nav-cta">Quero Agora →</a>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow">
+          ✅ Mais de 3.000 pessoas já organizaram suas finanças
+        </div>
+        <h1>
+          Chega de <em>perder dinheiro</em> sem saber para onde vai
+        </h1>
+        <p>
+          A planilha completa de controle financeiro com dashboard visual, gráficos automáticos e acompanhamento de investimentos — pronta para usar em minutos, sem precisar ser expert em Excel.
+        </p>
+        <div class="hero-actions">
+          <a href="checkout.html" class="btn-primary">
+            📥 Quero Organizar Minhas Finanças
+          </a>
+          <a href="#beneficios" class="btn-secondary">Ver o que inclui</a>
+        </div>
+        <div class="hero-price">
+          <span class="hero-price-old">De R$29,90</span>
+          <span class="hero-price-main">por apenas <strong>R$9,90</strong></span>
+          <span class="hero-price-badge">67% OFF</span>
+        </div>
+        <div class="hero-note">
+          🔒 Entrega imediata &nbsp;·&nbsp; Formato .xlsx &nbsp;·&nbsp; Sem mensalidade
+        </div>
+      </div>
+
+      <!-- Dashboard Mockup -->
+      <div class="hero-visual">
+        <div class="dashboard-mockup">
+          <div class="db-header">
+            <div class="db-dots">
+              <div class="db-dot"></div>
+              <div class="db-dot"></div>
+              <div class="db-dot"></div>
+            </div>
+            <span class="db-title">📊 Dashboard — Controle Financeiro Pessoal</span>
+          </div>
+          <div class="db-body">
+            <div class="db-cards">
+              <div class="db-card">
+                <div class="db-card-label">💵 Receita</div>
+                <div class="db-card-val green">R$5.800</div>
+              </div>
+              <div class="db-card">
+                <div class="db-card-label">💸 Despesas</div>
+                <div class="db-card-val red">R$3.240</div>
+              </div>
+              <div class="db-card">
+                <div class="db-card-label">📈 Investido</div>
+                <div class="db-card-val gold">R$1.200</div>
+              </div>
+              <div class="db-card">
+                <div class="db-card-label">💾 Saldo</div>
+                <div class="db-card-val green">R$1.360</div>
+              </div>
+            </div>
+            <div class="db-charts">
+              <div class="db-chart-box">
+                <div class="db-chart-title">📂 GASTOS POR CATEGORIA</div>
+                <svg class="bar-chart" viewBox="0 0 260 80" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="10"  y="20" width="28" height="60" rx="4" fill="#10b981" opacity=".85"/>
+                  <rect x="50"  y="35" width="28" height="45" rx="4" fill="#3b82f6" opacity=".85"/>
+                  <rect x="90"  y="10" width="28" height="70" rx="4" fill="#8b5cf6" opacity=".85"/>
+                  <rect x="130" y="45" width="28" height="35" rx="4" fill="#f59e0b" opacity=".85"/>
+                  <rect x="170" y="30" width="28" height="50" rx="4" fill="#ef4444" opacity=".85"/>
+                  <rect x="210" y="50" width="28" height="30" rx="4" fill="#06b6d4" opacity=".85"/>
+                </svg>
+                <div class="db-legend">
+                  <div class="db-legend-item"><div class="db-legend-dot" style="background:#10b981"></div>Alimentação</div>
+                  <div class="db-legend-item"><div class="db-legend-dot" style="background:#3b82f6"></div>Transporte</div>
+                  <div class="db-legend-item"><div class="db-legend-dot" style="background:#8b5cf6"></div>Moradia</div>
+                  <div class="db-legend-item"><div class="db-legend-dot" style="background:#f59e0b"></div>Lazer</div>
+                </div>
+              </div>
+              <div class="db-chart-box">
+                <div class="db-chart-title">📈 INVESTIMENTOS</div>
+                <svg class="pie-chart" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="40" cy="40" r="32" fill="none" stroke="#e2e8f0" stroke-width="14"/>
+                  <circle cx="40" cy="40" r="32" fill="none" stroke="#10b981" stroke-width="14"
+                    stroke-dasharray="80 121" stroke-dashoffset="0" transform="rotate(-90 40 40)"/>
+                  <circle cx="40" cy="40" r="32" fill="none" stroke="#3b82f6" stroke-width="14"
+                    stroke-dasharray="50 151" stroke-dashoffset="-80" transform="rotate(-90 40 40)"/>
+                  <circle cx="40" cy="40" r="32" fill="none" stroke="#f59e0b" stroke-width="14"
+                    stroke-dasharray="35 166" stroke-dashoffset="-130" transform="rotate(-90 40 40)"/>
+                  <text x="40" y="44" text-anchor="middle" font-size="9" font-weight="bold" fill="#0f172a">R.Fixa</text>
+                </svg>
+                <div class="db-legend" style="margin-top:8px;justify-content:center">
+                  <div class="db-legend-item"><div class="db-legend-dot" style="background:#10b981"></div>R. Fixa</div>
+                  <div class="db-legend-item"><div class="db-legend-dot" style="background:#3b82f6"></div>Ações</div>
+                  <div class="db-legend-item"><div class="db-legend-dot" style="background:#f59e0b"></div>FIIs</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PROOF BAR ══════════ -->
+<div class="proof-bar">
+  <div class="container">
+    <div class="proof-items">
+      <div class="proof-item">
+        <span class="proof-icon">⭐</span>
+        <div><span class="proof-num">4,9/5</span><br/><small style="color:var(--gray-500)">Avaliação média</small></div>
+      </div>
+      <div class="proof-item">
+        <span class="proof-icon">👤</span>
+        <div><span class="proof-num">3.200+</span><br/><small style="color:var(--gray-500)">Usuários ativos</small></div>
+      </div>
+      <div class="proof-item">
+        <span class="proof-icon">📋</span>
+        <div><span class="proof-num">8 abas</span><br/><small style="color:var(--gray-500)">Módulos incluídos</small></div>
+      </div>
+      <div class="proof-item">
+        <span class="proof-icon">⚡</span>
+        <div><span class="proof-num">100% automático</span><br/><small style="color:var(--gray-500)">Fórmulas prontas</small></div>
+      </div>
+      <div class="proof-item">
+        <span class="proof-icon">💳</span>
+        <div><span class="proof-num">Pagamento único</span><br/><small style="color:var(--gray-500)">Sem mensalidade</small></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PROBLEM ══════════ -->
+<section class="problem">
+  <div class="container">
+    <div class="problem-grid">
+      <div>
+        <div class="tag">O problema real</div>
+        <h2>Por que a maioria das pessoas <em style="font-style:normal;color:#ef4444">não consegue</em> guardar dinheiro?</h2>
+        <p style="color:var(--gray-500);margin-top:12px">Não é falta de renda — é falta de visibilidade. Quando você não sabe para onde vai cada real, é impossível mudar seus resultados.</p>
+        <ul class="pain-list">
+          <li class="pain-item">
+            <span class="pain-icon">😤</span>
+            <span class="pain-text">Você sente que trabalha muito, mas no fim do mês o dinheiro simplesmente some</span>
+          </li>
+          <li class="pain-item">
+            <span class="pain-icon">📊</span>
+            <span class="pain-text">Já tentou planilhas genéricas, mas eram complicadas demais ou não tinham o que precisava</span>
+          </li>
+          <li class="pain-item">
+            <span class="pain-icon">🎯</span>
+            <span class="pain-text">Tem metas financeiras, mas nunca sabe se está no caminho certo para alcançá-las</span>
+          </li>
+          <li class="pain-item">
+            <span class="pain-icon">📈</span>
+            <span class="pain-text">Investe, mas não visualiza sua carteira de forma clara e organizada em um só lugar</span>
+          </li>
+        </ul>
+      </div>
+      <div class="solution-box">
+        <div class="solution-emoji">🎯</div>
+        <h3>A solução é simples: ter o controle visual e automatizado das suas finanças</h3>
+        <p>Com a planilha certa, você leva menos de 5 minutos por dia para saber exatamente onde está seu dinheiro e para onde ele está indo.</p>
+        <br/>
+        <a href="checkout.html" class="btn-primary" style="justify-content:center">Quero esse controle agora →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BENEFITS ══════════ -->
+<section class="benefits section" id="beneficios">
+  <div class="container text-center">
+    <div class="tag">Benefícios</div>
+    <h2>Tudo que você precisa para ter clareza financeira</h2>
+    <p class="benefits-subtitle">Não é só uma planilha — é o seu gestor financeiro pessoal, disponível 24h e sem precisar contratar ninguém.</p>
+
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon green">📊</div>
+        <h3>Dashboard Visual e Automático</h3>
+        <p>Assim que você lança seus dados, o painel principal atualiza sozinho com gráficos de gastos por categoria, evolução de investimentos e saldo líquido do mês. Zero esforço extra.</p>
+        <div class="feature-pills">
+          <span class="pill">Gráficos automáticos</span>
+          <span class="pill">Resumo mensal</span>
+          <span class="pill">Indicadores visuais</span>
+        </div>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon blue">💼</div>
+        <h3>Carteira de Investimentos Completa</h3>
+        <p>Acompanhe Renda Fixa, Ações, FIIs e outros ativos em uma só tela. Veja o valor atual, rentabilidade e percentual de retorno de cada investimento sem precisar abrir múltiplos apps.</p>
+        <div class="feature-pills">
+          <span class="pill">Rentabilidade em %</span>
+          <span class="pill">Valor atual</span>
+          <span class="pill">Tipo de ativo</span>
+        </div>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon purple">🎯</div>
+        <h3>Rastreador de Metas Financeiras</h3>
+        <p>Defina suas metas — reserva de emergência, viagem, aposentadoria — e acompanhe o progresso em tempo real com barra de progresso e prazo. Motivação visual para não desviar do plano.</p>
+        <div class="feature-pills">
+          <span class="pill">Barra de progresso</span>
+          <span class="pill">Prazo definido</span>
+          <span class="pill">Status automático</span>
+        </div>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon gold">⚡</div>
+        <h3>Fácil de Preencher, Qualquer Dia</h3>
+        <p>Funciona para preenchimento diário ou mensal. Todas as fórmulas já estão prontas — você só insere os valores e tudo mais é calculado automaticamente. Ideal para quem não tem tempo a perder.</p>
+        <div class="feature-pills">
+          <span class="pill">Diário ou mensal</span>
+          <span class="pill">Fórmulas prontas</span>
+          <span class="pill">Sem conhecimento técnico</span>
+        </div>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon green">📅</div>
+        <h3>Comparativo Anual Detalhado</h3>
+        <p>A aba de comparativo anual reúne todos os meses lado a lado — receitas, despesas e investimentos — para você enxergar sua evolução financeira ao longo do ano e identificar padrões de gastos com clareza.</p>
+        <div class="feature-pills">
+          <span class="pill">Visão 12 meses</span>
+          <span class="pill">Comparativo mensal</span>
+          <span class="pill">Evolução do patrimônio</span>
+        </div>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon blue">♾️</div>
+        <h3>Uma Planilha Para a Vida Toda</h3>
+        <p>Você paga uma vez e usa para sempre. Basta atualizar o mês e o ano que quer analisar — a planilha se adapta automaticamente. Daqui a 5 ou 10 anos, ela ainda vai estar funcionando e registrando sua história financeira.</p>
+        <div class="feature-pills">
+          <span class="pill">Pagamento único</span>
+          <span class="pill">Sem mensalidade</span>
+          <span class="pill">Uso vitalício</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ WHAT'S INSIDE ══════════ -->
+<section class="inside section" id="o-que-tem">
+  <div class="container text-center">
+    <div class="tag" style="background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.2)">O que está incluso</div>
+    <h2>8 abas completas para dominar cada aspecto da sua vida financeira</h2>
+    <p class="inside-subtitle">Cada aba foi pensada para cobrir uma área específica, sem repetição e sem complicação.</p>
+
+    <div class="sheets-grid">
+      <div class="sheet-card">
+        <div class="sheet-emoji">📊</div>
+        <div class="sheet-name">Dashboard</div>
+        <div class="sheet-desc">Visão geral de toda a sua vida financeira em um único painel com gráficos</div>
+      </div>
+      <div class="sheet-card">
+        <div class="sheet-emoji">💸</div>
+        <div class="sheet-name">Despesas</div>
+        <div class="sheet-desc">Registro detalhado por data, categoria e forma de pagamento</div>
+      </div>
+      <div class="sheet-card">
+        <div class="sheet-emoji">💵</div>
+        <div class="sheet-name">Receitas</div>
+        <div class="sheet-desc">Controle de todas as fontes de renda: salário, freelance, dividendos e mais</div>
+      </div>
+      <div class="sheet-card">
+        <div class="sheet-emoji">💼</div>
+        <div class="sheet-name">Investimentos</div>
+        <div class="sheet-desc">Carteira completa com rentabilidade, valor atual e % de retorno</div>
+      </div>
+      <div class="sheet-card">
+        <div class="sheet-emoji">🎯</div>
+        <div class="sheet-name">Metas</div>
+        <div class="sheet-desc">Defina objetivos e acompanhe o progresso com prazo e barra visual</div>
+      </div>
+      <div class="sheet-card">
+        <div class="sheet-emoji">📈</div>
+        <div class="sheet-name">Dados Mensais</div>
+        <div class="sheet-desc">Histórico consolidado de cada mês para comparação de evolução</div>
+      </div>
+      <div class="sheet-card">
+        <div class="sheet-emoji">📅</div>
+        <div class="sheet-name">Comparativo Anual</div>
+        <div class="sheet-desc">Veja como seu padrão financeiro muda ao longo do ano</div>
+      </div>
+      <div class="sheet-card">
+        <div class="sheet-emoji">🔧</div>
+        <div class="sheet-name">Listas de Apoio</div>
+        <div class="sheet-desc">Categorias, fontes de renda e tipos de ativo para personalizar a planilha</div>
+      </div>
+    </div>
+
+    <a href="checkout.html" class="btn-primary" style="font-size:1.1rem">📥 Quero todas essas abas agora →</a>
+  </div>
+</section>
+
+<!-- ══════════ TESTIMONIALS ══════════ -->
+<section class="testimonials section" id="depoimentos">
+  <div class="container text-center">
+    <div class="tag">Depoimentos reais</div>
+    <h2>Quem já usa, não abre mão</h2>
+    <p class="testimonials-sub">Mais de 3.000 pessoas já transformaram sua relação com o dinheiro. Veja o que elas dizem.</p>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-quote">
+          Finalmente entendi para onde ia meu dinheiro todo mês! O dashboard é incrível, em 2 minutos eu já sei como estão meus gastos e se estou dentro do que planejei. Recomendo demais.
+        </p>
+        <div class="testimonial-author">
+          <div class="author-avatar av-green">LS</div>
+          <div>
+            <div class="author-name">Larissa Santos</div>
+            <div class="author-title">Designer Freelancer • São Paulo, SP</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-quote">
+          Uso para controlar minha carteira de investimentos e os gastos mensais ao mesmo tempo. Ter tudo em um lugar só mudou o jogo. Já consegui economizar mais de R$800 por mês só de identificar gastos desnecessários.
+        </p>
+        <div class="testimonial-author">
+          <div class="author-avatar av-blue">RO</div>
+          <div>
+            <div class="author-name">Rafael Oliveira</div>
+            <div class="author-title">Analista de TI • Curitiba, PR</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-quote">
+          Eu tinha tentado três planilhas antes e desisti de todas. Essa aqui é diferente — simples de preencher, visual lindo e funciona de verdade. Em 4 meses já atingi minha meta de reserva de emergência!
+        </p>
+        <div class="testimonial-author">
+          <div class="author-avatar av-purple">CM</div>
+          <div>
+            <div class="author-name">Camila Mendes</div>
+            <div class="author-title">Enfermeira • Belo Horizonte, MG</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating Summary -->
+    <div style="margin-top:56px;padding:32px;background:var(--white);border-radius:20px;border:1px solid var(--gray-200);display:inline-block;min-width:320px;">
+      <div style="font-size:3rem;font-weight:900;color:var(--gray-900)">4,9</div>
+      <div class="stars" style="font-size:1.5rem">★★★★★</div>
+      <div style="font-size:.9rem;color:var(--gray-500);margin-top:8px">Baseado em +800 avaliações verificadas</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SCREENSHOTS / SIMULAÇÕES ══════════ -->
+<section class="screenshots section" id="screenshots" style="background:var(--gray-100)">
+  <div class="container text-center">
+    <div class="tag">Veja por dentro</div>
+    <h2 style="font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;margin-bottom:12px">Simulações reais da planilha</h2>
+    <p style="color:var(--gray-500);margin-bottom:48px;font-size:1rem">Clique nas abas abaixo para explorar cada tela da planilha exatamente como ela é.</p>
+
+    <!-- Tab switcher -->
+    <div class="ss-tabs" id="ssTabs">
+      <button class="ss-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+      <button class="ss-tab" onclick="showTab('despesas')">💸 Despesas</button>
+      <button class="ss-tab" onclick="showTab('investimentos')">💼 Investimentos</button>
+      <button class="ss-tab" onclick="showTab('metas')">🎯 Metas</button>
+    </div>
+
+    <!-- ── TAB: Dashboard ── -->
+    <div class="ss-panel active" id="tab-dashboard">
+      <div class="excel-window">
+        <div class="excel-bar">
+          <div class="excel-dots"><span></span><span></span><span></span></div>
+          <div class="excel-title">📊 Dashboard — Planilha de Controle de Gastos e Investimento.xlsx</div>
+          <div style="width:56px"></div>
+        </div>
+        <div class="excel-ribbon">
+          <span>Início</span><span>Inserir</span><span>Layout</span><span>Fórmulas</span><span>Dados</span><span>Exibir</span>
+        </div>
+        <div class="excel-body">
+          <!-- Header da planilha -->
+          <div style="background:linear-gradient(90deg,#0f1f3d,#1a3260);padding:14px 24px;border-radius:8px;color:#fff;display:flex;align-items:center;gap:12px;margin-bottom:20px">
+            <span style="font-size:1.5rem">💰</span>
+            <span style="font-size:1.1rem;font-weight:800;letter-spacing:.04em">PLANILHA DE CONTROLE DE GASTOS E INVESTIMENTO</span>
+            <span style="margin-left:auto;font-size:.8rem;opacity:.6">Maio / 2026</span>
+          </div>
+          <!-- KPI Cards -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+            <div class="kpi-card" style="border-top:4px solid #10b981">
+              <div class="kpi-label">💵 RECEITA MENSAL</div>
+              <div class="kpi-val" style="color:#059669">R$ 5.800,00</div>
+              <div class="kpi-delta" style="color:#059669">▲ 8% vs mês ant.</div>
+            </div>
+            <div class="kpi-card" style="border-top:4px solid #ef4444">
+              <div class="kpi-label">💸 DESPESA MENSAL</div>
+              <div class="kpi-val" style="color:#dc2626">R$ 3.240,00</div>
+              <div class="kpi-delta" style="color:#dc2626">▼ 3% vs mês ant.</div>
+            </div>
+            <div class="kpi-card" style="border-top:4px solid #f59e0b">
+              <div class="kpi-label">📈 INVESTIMENTOS</div>
+              <div class="kpi-val" style="color:#d97706">R$ 1.200,00</div>
+              <div class="kpi-delta" style="color:#059669">▲ 15% rendimento</div>
+            </div>
+            <div class="kpi-card" style="border-top:4px solid #3b82f6">
+              <div class="kpi-label">💾 SALDO LÍQUIDO</div>
+              <div class="kpi-val" style="color:#1d4ed8">R$ 1.360,00</div>
+              <div class="kpi-delta" style="color:#059669">✓ No azul</div>
+            </div>
+          </div>
+          <!-- Charts row -->
+          <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:16px">
+            <!-- Bar chart gastos -->
+            <div class="chart-box">
+              <div class="chart-title">📂 GASTOS POR CATEGORIA</div>
+              <svg viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:140px">
+                <!-- Bars -->
+                <rect x="20"  y="40" width="34" height="90" rx="4" fill="#ef4444"/>
+                <rect x="68"  y="60" width="34" height="70" rx="4" fill="#f59e0b"/>
+                <rect x="116" y="20" width="34" height="110" rx="4" fill="#10b981"/>
+                <rect x="164" y="75" width="34" height="55" rx="4" fill="#3b82f6"/>
+                <rect x="212" y="85" width="34" height="45" rx="4" fill="#8b5cf6"/>
+                <rect x="260" y="95" width="34" height="35" rx="4" fill="#06b6d4"/>
+                <!-- Labels -->
+                <text x="37"  y="138" text-anchor="middle" font-size="8" fill="#64748b">Moradia</text>
+                <text x="85"  y="138" text-anchor="middle" font-size="8" fill="#64748b">Aliment.</text>
+                <text x="133" y="138" text-anchor="middle" font-size="8" fill="#64748b">Transp.</text>
+                <text x="181" y="138" text-anchor="middle" font-size="8" fill="#64748b">Saúde</text>
+                <text x="229" y="138" text-anchor="middle" font-size="8" fill="#64748b">Lazer</text>
+                <text x="277" y="138" text-anchor="middle" font-size="8" fill="#64748b">Outros</text>
+                <!-- Values -->
+                <text x="37"  y="34"  text-anchor="middle" font-size="8" font-weight="bold" fill="#ef4444">1400</text>
+                <text x="85"  y="54"  text-anchor="middle" font-size="8" font-weight="bold" fill="#f59e0b">980</text>
+                <text x="133" y="14"  text-anchor="middle" font-size="8" font-weight="bold" fill="#059669">380</text>
+                <text x="181" y="69"  text-anchor="middle" font-size="8" font-weight="bold" fill="#1d4ed8">280</text>
+                <text x="229" y="79"  text-anchor="middle" font-size="8" font-weight="bold" fill="#6d28d9">150</text>
+                <text x="277" y="89"  text-anchor="middle" font-size="8" font-weight="bold" fill="#0891b2">50</text>
+              </svg>
+            </div>
+            <!-- Pie investimentos -->
+            <div class="chart-box">
+              <div class="chart-title">📈 CARTEIRA</div>
+              <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:120px">
+                <circle cx="60" cy="60" r="46" fill="none" stroke="#e2e8f0" stroke-width="20"/>
+                <circle cx="60" cy="60" r="46" fill="none" stroke="#10b981" stroke-width="20"
+                  stroke-dasharray="115 174" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+                <circle cx="60" cy="60" r="46" fill="none" stroke="#3b82f6" stroke-width="20"
+                  stroke-dasharray="75 214" stroke-dashoffset="-115" transform="rotate(-90 60 60)"/>
+                <circle cx="60" cy="60" r="46" fill="none" stroke="#f59e0b" stroke-width="20"
+                  stroke-dasharray="60 229" stroke-dashoffset="-190" transform="rotate(-90 60 60)"/>
+                <text x="60" y="57" text-anchor="middle" font-size="9" font-weight="bold" fill="#0f172a">R$</text>
+                <text x="60" y="68" text-anchor="middle" font-size="8" fill="#0f172a">14.800</text>
+              </svg>
+              <div style="display:flex;flex-direction:column;gap:4px;margin-top:4px">
+                <div style="display:flex;align-items:center;gap:6px;font-size:.7rem;color:#64748b"><span style="width:10px;height:10px;background:#10b981;border-radius:2px;display:inline-block"></span>Renda Fixa 40%</div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:.7rem;color:#64748b"><span style="width:10px;height:10px;background:#3b82f6;border-radius:2px;display:inline-block"></span>Ações 27%</div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:.7rem;color:#64748b"><span style="width:10px;height:10px;background:#f59e0b;border-radius:2px;display:inline-block"></span>FIIs 22%</div>
+              </div>
+            </div>
+            <!-- Resumo rápido -->
+            <div class="chart-box">
+              <div class="chart-title">📋 RESUMO RÁPIDO</div>
+              <table style="width:100%;border-collapse:collapse;font-size:.78rem">
+                <tr style="border-bottom:1px solid #e2e8f0">
+                  <td style="padding:6px 0;color:#64748b">Total Receitas</td>
+                  <td style="padding:6px 0;text-align:right;font-weight:700;color:#059669">R$5.800</td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0">
+                  <td style="padding:6px 0;color:#64748b">Total Despesas</td>
+                  <td style="padding:6px 0;text-align:right;font-weight:700;color:#dc2626">R$3.240</td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0">
+                  <td style="padding:6px 0;color:#64748b">Total Investido</td>
+                  <td style="padding:6px 0;text-align:right;font-weight:700;color:#d97706">R$1.200</td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0">
+                  <td style="padding:6px 0;color:#64748b">Taxa de Poupança</td>
+                  <td style="padding:6px 0;text-align:right;font-weight:700;color:#059669">23,4%</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 0;color:#64748b;font-weight:700">Saldo Líquido</td>
+                  <td style="padding:6px 0;text-align:right;font-weight:800;color:#1d4ed8;font-size:.9rem">R$1.360</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- Sheet tabs -->
+        <div class="excel-sheet-tabs">
+          <div class="es-tab active">📊 Dashboard</div>
+          <div class="es-tab">💸 Despesas</div>
+          <div class="es-tab">💼 Investimentos</div>
+          <div class="es-tab">🎯 Metas</div>
+          <div class="es-tab">💵 Receitas</div>
+          <div class="es-tab">📈 Dados Mensais</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Despesas ── -->
+    <div class="ss-panel" id="tab-despesas">
+      <div class="excel-window">
+        <div class="excel-bar">
+          <div class="excel-dots"><span></span><span></span><span></span></div>
+          <div class="excel-title">💸 Despesas — Planilha de Controle de Gastos e Investimento.xlsx</div>
+          <div style="width:56px"></div>
+        </div>
+        <div class="excel-ribbon">
+          <span>Início</span><span>Inserir</span><span>Layout</span><span>Fórmulas</span><span>Dados</span><span>Exibir</span>
+        </div>
+        <div class="excel-body">
+          <div style="background:linear-gradient(90deg,#7f1d1d,#991b1b);padding:12px 24px;border-radius:8px;color:#fff;display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <span style="font-size:1.3rem">💸</span>
+            <span style="font-size:1rem;font-weight:800">DESPESAS — MAIO 2026</span>
+            <div style="margin-left:auto;background:rgba(255,255,255,.15);padding:6px 16px;border-radius:6px;font-size:.85rem;font-weight:700">TOTAL: R$ 3.240,00</div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Data</th><th>Descrição</th><th>Valor (R$)</th><th>Categoria</th><th>Forma Pgto</th><th>Observação</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>05/05/2026</td><td>Aluguel</td><td class="money red">1.400,00</td><td><span class="cat-badge" style="background:#fee2e2;color:#991b1b">🏠 Moradia</span></td><td>Transferência</td><td>—</td></tr>
+                <tr class="row-alt"><td>07/05/2026</td><td>Supermercado Extra</td><td class="money red">487,50</td><td><span class="cat-badge" style="background:#fef3c7;color:#92400e">🍎 Alimentação</span></td><td>Débito</td><td>Compra semanal</td></tr>
+                <tr><td>10/05/2026</td><td>Combustível</td><td class="money red">210,00</td><td><span class="cat-badge" style="background:#dbeafe;color:#1e40af">🚗 Transporte</span></td><td>Crédito</td><td>—</td></tr>
+                <tr class="row-alt"><td>12/05/2026</td><td>Farmácia</td><td class="money red">89,90</td><td><span class="cat-badge" style="background:#d1fae5;color:#065f46">💊 Saúde</span></td><td>Dinheiro</td><td>Medicamento</td></tr>
+                <tr><td>14/05/2026</td><td>Academia</td><td class="money red">99,00</td><td><span class="cat-badge" style="background:#d1fae5;color:#065f46">💪 Saúde</span></td><td>Débito</td><td>Mensalidade</td></tr>
+                <tr class="row-alt"><td>15/05/2026</td><td>Netflix + Spotify</td><td class="money red">75,80</td><td><span class="cat-badge" style="background:#ede9fe;color:#4c1d95">🎬 Lazer</span></td><td>Crédito</td><td>Assinaturas</td></tr>
+                <tr><td>18/05/2026</td><td>Restaurante</td><td class="money red">148,00</td><td><span class="cat-badge" style="background:#fef3c7;color:#92400e">🍎 Alimentação</span></td><td>Crédito</td><td>Jantar aniversário</td></tr>
+                <tr class="row-alt"><td>20/05/2026</td><td>Uber</td><td class="money red">67,40</td><td><span class="cat-badge" style="background:#dbeafe;color:#1e40af">🚗 Transporte</span></td><td>App</td><td>—</td></tr>
+                <tr><td>22/05/2026</td><td>Energia elétrica</td><td class="money red">182,40</td><td><span class="cat-badge" style="background:#fee2e2;color:#991b1b">🏠 Moradia</span></td><td>Boleto</td><td>CPFL</td></tr>
+                <tr class="row-alt"><td>24/05/2026</td><td>Curso online</td><td class="money red">197,00</td><td><span class="cat-badge" style="background:#ede9fe;color:#4c1d95">📚 Educação</span></td><td>Crédito</td><td>Udemy</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="excel-sheet-tabs">
+          <div class="es-tab">📊 Dashboard</div>
+          <div class="es-tab active">💸 Despesas</div>
+          <div class="es-tab">💼 Investimentos</div>
+          <div class="es-tab">🎯 Metas</div>
+          <div class="es-tab">💵 Receitas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Investimentos ── -->
+    <div class="ss-panel" id="tab-investimentos">
+      <div class="excel-window">
+        <div class="excel-bar">
+          <div class="excel-dots"><span></span><span></span><span></span></div>
+          <div class="excel-title">💼 Investimentos — Planilha de Controle de Gastos e Investimento.xlsx</div>
+          <div style="width:56px"></div>
+        </div>
+        <div class="excel-ribbon">
+          <span>Início</span><span>Inserir</span><span>Layout</span><span>Fórmulas</span><span>Dados</span><span>Exibir</span>
+        </div>
+        <div class="excel-body">
+          <div style="background:linear-gradient(90deg,#064e3b,#065f46);padding:12px 24px;border-radius:8px;color:#fff;display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <span style="font-size:1.3rem">💼</span>
+            <span style="font-size:1rem;font-weight:800">CARTEIRA DE INVESTIMENTOS</span>
+            <div style="margin-left:auto;display:flex;gap:16px">
+              <div style="text-align:center"><div style="font-size:.65rem;opacity:.7">Total Investido</div><div style="font-weight:800">R$ 14.800</div></div>
+              <div style="text-align:center"><div style="font-size:.65rem;opacity:.7">Patrimônio</div><div style="font-weight:800;color:#6ee7b7">R$ 16.243</div></div>
+              <div style="text-align:center"><div style="font-size:.65rem;opacity:.7">Rentab.</div><div style="font-weight:800;color:#6ee7b7">+9,75%</div></div>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Ativo</th><th>Tipo</th><th>Data Compra</th><th>Valor Invest.</th><th>Rentabilidade</th><th>Valor Atual</th><th>% Retorno</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>CDB Banco Inter</strong></td><td><span class="cat-badge" style="background:#d1fae5;color:#065f46">Renda Fixa</span></td><td>10/01/2026</td><td class="money">5.000,00</td><td class="money">+350,00</td><td class="money green">5.350,00</td><td class="pct green">+7,00%</td></tr>
+                <tr class="row-alt"><td><strong>PETR4</strong></td><td><span class="cat-badge" style="background:#dbeafe;color:#1e40af">Ações</span></td><td>15/02/2026</td><td class="money">2.500,00</td><td class="money">+312,00</td><td class="money green">2.812,00</td><td class="pct green">+12,48%</td></tr>
+                <tr><td><strong>HGLG11</strong></td><td><span class="cat-badge" style="background:#fef3c7;color:#92400e">FII</span></td><td>20/02/2026</td><td class="money">3.200,00</td><td class="money">+448,00</td><td class="money green">3.648,00</td><td class="pct green">+14,00%</td></tr>
+                <tr class="row-alt"><td><strong>Tesouro Selic</strong></td><td><span class="cat-badge" style="background:#d1fae5;color:#065f46">Renda Fixa</span></td><td>05/03/2026</td><td class="money">2.100,00</td><td class="money">+109,20</td><td class="money green">2.209,20</td><td class="pct green">+5,20%</td></tr>
+                <tr><td><strong>VALE3</strong></td><td><span class="cat-badge" style="background:#dbeafe;color:#1e40af">Ações</span></td><td>10/03/2026</td><td class="money">1.200,00</td><td class="money red">-78,00</td><td class="money red">1.122,00</td><td class="pct red">-6,50%</td></tr>
+                <tr class="row-alt"><td><strong>BTC / Cripto</strong></td><td><span class="cat-badge" style="background:#ede9fe;color:#4c1d95">Cripto</span></td><td>01/04/2026</td><td class="money">800,00</td><td class="money">+101,80</td><td class="money green">901,80</td><td class="pct green">+12,73%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="excel-sheet-tabs">
+          <div class="es-tab">📊 Dashboard</div>
+          <div class="es-tab">💸 Despesas</div>
+          <div class="es-tab active">💼 Investimentos</div>
+          <div class="es-tab">🎯 Metas</div>
+          <div class="es-tab">💵 Receitas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: Metas ── -->
+    <div class="ss-panel" id="tab-metas">
+      <div class="excel-window">
+        <div class="excel-bar">
+          <div class="excel-dots"><span></span><span></span><span></span></div>
+          <div class="excel-title">🎯 Metas — Planilha de Controle de Gastos e Investimento.xlsx</div>
+          <div style="width:56px"></div>
+        </div>
+        <div class="excel-ribbon">
+          <span>Início</span><span>Inserir</span><span>Layout</span><span>Fórmulas</span><span>Dados</span><span>Exibir</span>
+        </div>
+        <div class="excel-body">
+          <div style="background:linear-gradient(90deg,#1e1b4b,#312e81);padding:12px 24px;border-radius:8px;color:#fff;display:flex;align-items:center;gap:12px;margin-bottom:20px">
+            <span style="font-size:1.3rem">🎯</span>
+            <span style="font-size:1rem;font-weight:800">METAS FINANCEIRAS</span>
+            <div style="margin-left:auto;font-size:.8rem;opacity:.6">Progresso atualizado automaticamente</div>
+          </div>
+          <!-- Meta cards -->
+          <div style="display:grid;gap:14px">
+            <div class="meta-card">
+              <div class="meta-top">
+                <div><div class="meta-name">🛡️ Reserva de Emergência</div><div class="meta-sub">Prazo: Dez/2026</div></div>
+                <div style="text-align:right"><div class="meta-pct" style="color:#059669">53,3%</div><div style="font-size:.75rem;color:#64748b">R$8.000 / R$15.000</div></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:53.3%;background:#10b981"></div></div>
+              <div style="font-size:.72rem;color:#64748b;margin-top:4px">Faltam R$ 7.000,00 · No ritmo atual: ~5 meses</div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-top">
+                <div><div class="meta-name">✈️ Viagem Europa</div><div class="meta-sub">Prazo: Jun/2027</div></div>
+                <div style="text-align:right"><div class="meta-pct" style="color:#d97706">29,2%</div><div style="font-size:.75rem;color:#64748b">R$3.500 / R$12.000</div></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:29.2%;background:#f59e0b"></div></div>
+              <div style="font-size:.72rem;color:#64748b;margin-top:4px">Faltam R$ 8.500,00 · No ritmo atual: ~14 meses</div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-top">
+                <div><div class="meta-name">💻 Novo Notebook</div><div class="meta-sub">Prazo: Set/2026</div></div>
+                <div style="text-align:right"><div class="meta-pct" style="color:#d97706">48,9%</div><div style="font-size:.75rem;color:#64748b">R$2.200 / R$4.500</div></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:48.9%;background:#f59e0b"></div></div>
+              <div style="font-size:.72rem;color:#64748b;margin-top:4px">Faltam R$ 2.300,00 · No ritmo atual: ~4 meses</div>
+            </div>
+            <div class="meta-card">
+              <div class="meta-top">
+                <div><div class="meta-name">🏦 Aposentadoria</div><div class="meta-sub">Prazo: Jan/2045</div></div>
+                <div style="text-align:right"><div class="meta-pct" style="color:#dc2626">5,0%</div><div style="font-size:.75rem;color:#64748b">R$25.000 / R$500.000</div></div>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:5%;background:#3b82f6"></div></div>
+              <div style="font-size:.72rem;color:#64748b;margin-top:4px">Faltam R$ 475.000,00 · Longo prazo — 19 anos</div>
+            </div>
+          </div>
+        </div>
+        <div class="excel-sheet-tabs">
+          <div class="es-tab">📊 Dashboard</div>
+          <div class="es-tab">💸 Despesas</div>
+          <div class="es-tab">💼 Investimentos</div>
+          <div class="es-tab active">🎯 Metas</div>
+          <div class="es-tab">💵 Receitas</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</section>
+
+<style>
+/* ── Screenshot section styles ── */
+.ss-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.ss-tab {
+  padding: 10px 22px;
+  border-radius: 100px;
+  border: 2px solid var(--gray-200);
+  background: var(--white);
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: all .2s;
+  font-family: 'Inter', sans-serif;
+}
+.ss-tab:hover { border-color: var(--green); color: var(--green-dk); }
+.ss-tab.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
+
+.ss-panel { display: none; }
+.ss-panel.active { display: block; }
+
+.excel-window {
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--gray-200);
+  text-align: left;
+}
+.excel-bar {
+  background: #1d2433;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.excel-dots { display: flex; gap: 6px; }
+.excel-dots span { width: 11px; height: 11px; border-radius: 50%; display: block; }
+.excel-dots span:nth-child(1){ background:#ff5f57; }
+.excel-dots span:nth-child(2){ background:#febc2e; }
+.excel-dots span:nth-child(3){ background:#28c840; }
+.excel-title { font-size: .78rem; color: rgba(255,255,255,.6); font-family: 'Inter', sans-serif; }
+
+.excel-ribbon {
+  background: #f0f0f0;
+  padding: 6px 16px;
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #d0d0d0;
+}
+.excel-ribbon span { font-size: .72rem; color: #555; cursor: pointer; font-family: 'Inter', sans-serif; }
+.excel-ribbon span:first-child { font-weight: 600; color: #117b45; }
+
+.excel-body { padding: 20px; background: #fafafa; max-height: 460px; overflow-y: auto; }
+
+.excel-sheet-tabs {
+  background: #e8e8e8;
+  display: flex;
+  gap: 2px;
+  padding: 4px 8px 0;
+  border-top: 1px solid #ccc;
+  overflow-x: auto;
+}
+.es-tab {
+  font-size: .72rem;
+  font-family: 'Inter', sans-serif;
+  padding: 5px 14px;
+  background: #d4d4d4;
+  border-radius: 4px 4px 0 0;
+  color: #555;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.es-tab.active { background: var(--white); color: #117b45; font-weight: 700; }
+
+.kpi-card {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--gray-200);
+}
+.kpi-label { font-size: .65rem; color: var(--gray-500); font-weight: 600; text-transform: uppercase; letter-spacing:.04em; margin-bottom:6px; }
+.kpi-val   { font-size: 1.2rem; font-weight: 900; margin-bottom: 4px; }
+.kpi-delta { font-size: .7rem; font-weight: 600; }
+
+.chart-box {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid var(--gray-200);
+}
+.chart-title { font-size: .7rem; font-weight: 800; color: var(--gray-700); text-transform: uppercase; letter-spacing:.04em; margin-bottom:12px; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.data-table th { background: #f1f5f9; padding: 8px 12px; font-size: .72rem; font-weight: 700; color: var(--gray-700); text-align: left; border-bottom: 2px solid #cbd5e1; white-space: nowrap; }
+.data-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; color: var(--gray-700); white-space: nowrap; }
+.row-alt td { background: #f8fafc; }
+.money { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.money.red   { color: #dc2626; }
+.money.green { color: #059669; }
+.pct { text-align: right; font-weight: 800; }
+.pct.red   { color: #dc2626; }
+.pct.green { color: #059669; }
+
+.cat-badge { font-size: .68rem; padding: 2px 8px; border-radius: 100px; font-weight: 600; white-space: nowrap; }
+
+.meta-card { background: var(--white); border-radius: 10px; padding: 16px; border: 1px solid var(--gray-200); }
+.meta-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.meta-name { font-weight: 700; font-size: .9rem; color: var(--gray-900); }
+.meta-sub  { font-size: .72rem; color: var(--gray-500); margin-top: 2px; }
+.meta-pct  { font-size: 1.3rem; font-weight: 900; }
+.progress-track { width: 100%; height: 10px; background: #e2e8f0; border-radius: 100px; overflow: hidden; }
+.progress-fill  { height: 100%; border-radius: 100px; transition: width .8s ease; }
+</style>
+
+<!-- ══════════ CTA / PRICE ══════════ -->
+<section class="cta-section" id="comprar">
+  <div class="container">
+    <div class="tag" style="background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.25)">⏳ Oferta limitada</div>
+    <h2>Comece hoje a ter controle real do seu dinheiro</h2>
+    <p>Um investimento único que vai te economizar centenas de reais por mês ao identificar onde você está desperdiçando.</p>
+
+    <div class="price-box">
+      <div class="price-badge">🔥 67% de desconto ativo</div>
+      <div class="price-old">De R$ 29,90</div>
+      <div class="price-main"><sup>R$</sup>9<sup style="font-size:1.8rem">,90</sup></div>
+      <div class="price-sub">Pagamento único · Acesso vitalício · Download imediato</div>
+    </div>
+
+    <br/>
+
+    <a href="checkout.html" class="btn-primary" style="font-size:1.15rem;padding:20px 48px">
+      📥 Quero a Planilha Agora por R$9,90
+    </a>
+
+    <div class="cta-guarantees">
+      <div class="cta-guarantee">🔒 Pagamento 100% seguro</div>
+      <div class="cta-guarantee">📧 Entrega imediata por e-mail</div>
+      <div class="cta-guarantee">♻️ Atualização gratuita</div>
+      <div class="cta-guarantee">💬 Suporte incluso</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FAQ ══════════ -->
+<section class="faq section" id="faq">
+  <div class="container text-center">
+    <div class="tag">Perguntas frequentes</div>
+    <h2>Ainda tem dúvidas? A gente responde.</h2>
+    <p class="faq-sub">Reunimos as perguntas mais comuns para que você possa tomar a melhor decisão.</p>
+
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span class="faq-q-text">Preciso saber usar Excel avançado para usar a planilha?</span>
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">
+          <p>Não! A planilha foi desenvolvida para ser simples e intuitiva. Você só precisa inserir os valores nas células indicadas — todas as fórmulas, cálculos e gráficos são gerados automaticamente. Se você sabe escrever em uma célula do Excel, consegue usar nossa planilha.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span class="faq-q-text">Em qual programa a planilha funciona?</span>
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">
+          <p>A planilha funciona no Microsoft Excel (Windows e Mac) e no Google Sheets. Para a melhor experiência com os gráficos e o dashboard, recomendamos o Microsoft Excel 2016 ou versão mais recente.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span class="faq-q-text">Posso usar para controle de investimentos também?</span>
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">
+          <p>Sim! A planilha tem uma aba dedicada exclusivamente para carteira de investimentos, onde você registra cada ativo (Renda Fixa, Ações, FIIs, Criptomoedas etc.), o valor investido, a rentabilidade e o valor atual. O Dashboard consolida tudo automaticamente junto com seus gastos.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span class="faq-q-text">Como recebo a planilha após a compra?</span>
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">
+          <p>Imediatamente após a confirmação do pagamento, você recebe um e-mail com o link para download do arquivo .xlsx. O processo é 100% automático — em menos de 2 minutos você já tem a planilha no seu computador, pronta para usar.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span class="faq-q-text">A planilha funciona para controle diário ou só mensal?</span>
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">
+          <p>As duas opções! Você pode registrar cada gasto e receita diariamente (o que dá uma visão mais precisa) ou consolidar tudo ao final do mês. A planilha é flexível e se adapta ao seu ritmo — o importante é que os dados sejam lançados, independente da frequência.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFAQ(this)">
+          <span class="faq-q-text">Posso personalizar as categorias de gastos?</span>
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-a">
+          <p>Sim! A aba "Listas" contém todas as categorias de gastos, fontes de renda e tipos de ativo. Você pode editar, adicionar ou remover itens conforme a sua realidade financeira. A planilha é totalmente editável.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="footer-logo">
+    <div class="logo-icon">💰</div>
+    Controle Financeiro
+  </div>
+  <p>© 2026 Controle Financeiro · Todos os direitos reservados</p>
+  <p style="margin-top:12px">
+    <a href="#" style="color:rgba(255,255,255,.4);margin:0 12px">Política de Privacidade</a>
+    <a href="#" style="color:rgba(255,255,255,.4);margin:0 12px">Termos de Uso</a>
+    <a href="#" style="color:rgba(255,255,255,.4);margin:0 12px">Contato</a>
+  </p>
+</footer>
+
+<script>
+  // Screenshot tab switcher
+  function showTab(id) {
+    document.querySelectorAll('.ss-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.ss-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // FAQ accordion
+  function toggleFAQ(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    // close all
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Intersection observer for fade-in animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.benefit-card, .sheet-card, .testimonial-card, .faq-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity .5s ease, transform .5s ease';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>

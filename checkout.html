@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finalizar Compra | Planilha de Controle de Gastos e Investimento</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:     #0f1f3d;
+      --green:    #10b981;
+      --green-dk: #059669;
+      --gold:     #f59e0b;
+      --white:    #ffffff;
+      --gray-50:  #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-500: #64748b;
+      --gray-700: #334155;
+      --gray-900: #0f172a;
+      --mp-blue:  #009ee3;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-700);
+      min-height: 100vh;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      background: var(--navy);
+      color: rgba(255,255,255,.85);
+      text-align: center;
+      font-size: .82rem;
+      padding: 10px;
+    }
+    .topbar strong { color: var(--gold); }
+
+    /* HEADER */
+    .checkout-header {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1rem; color: var(--navy); }
+    .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg,var(--green),var(--navy)); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .secure-badge { display: flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--gray-500); }
+
+    /* LAYOUT */
+    .checkout-body { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+    .checkout-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; align-items: start; }
+
+    /* ORDER SUMMARY */
+    .order-card {
+      background: var(--white);
+      border-radius: 16px;
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+    }
+    .order-header {
+      background: linear-gradient(135deg, var(--navy), #1a3260);
+      color: var(--white);
+      padding: 24px;
+    }
+    .order-header h2 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .order-header p  { font-size: .82rem; opacity: .7; }
+
+    .order-body { padding: 24px; }
+    .product-row {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--gray-100);
+      margin-bottom: 20px;
+    }
+    .product-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--green), var(--green-dk));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .product-name { font-weight: 700; font-size: .95rem; color: var(--gray-900); margin-bottom: 4px; }
+    .product-desc { font-size: .78rem; color: var(--gray-500); }
+    .product-price { margin-left: auto; text-align: right; flex-shrink: 0; }
+    .price-strike { font-size: .78rem; color: var(--gray-500); text-decoration: line-through; }
+    .price-final  { font-size: 1.3rem; font-weight: 900; color: var(--green-dk); }
+
+    .includes-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .include-item { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--gray-700); }
+    .include-item::before { content: '✓'; color: var(--green-dk); font-weight: 800; flex-shrink: 0; }
+
+    .price-total {
+      background: var(--gray-50);
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid var(--gray-200);
+    }
+    .price-row { display: flex; justify-content: space-between; font-size: .85rem; margin-bottom: 8px; }
+    .price-row.total { font-weight: 800; font-size: 1rem; color: var(--gray-900); margin-bottom: 0; padding-top: 8px; border-top: 1px solid var(--gray-200); }
+
+    .discount-badge {
+      display: inline-block;
+      background: #dcfce7;
+      color: #166534;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    /* PAYMENT CARD */
+    .payment-card {
+      background: var(--white);
+      border-radius: 16px;
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+    }
+    .payment-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .payment-header h3 { font-size: 1rem; font-weight: 700; color: var(--gray-900); }
+
+    .payment-body { padding: 24px; }
+
+    /* MP Button */
+    .mp-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      background: var(--mp-blue);
+      color: var(--white);
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 18px 24px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: background .2s, transform .15s;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 20px;
+    }
+    .mp-btn:hover { background: #007bb5; transform: translateY(-1px); }
+
+    /* MP Logo SVG inline */
+    .mp-logo { height: 22px; }
+
+    /* Pix option */
+    .pix-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      background: var(--white);
+      color: #00a859;
+      font-weight: 700;
+      font-size: .95rem;
+      padding: 14px 24px;
+      border-radius: 12px;
+      border: 2px solid #00a859;
+      cursor: pointer;
+      transition: background .2s;
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 20px;
+    }
+    .pix-btn:hover { background: #f0fdf4; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--gray-500);
+      font-size: .78rem;
+      margin-bottom: 16px;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+
+    .payment-methods {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .pm-icon {
+      background: var(--gray-100);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--gray-500);
+    }
+
+    .security-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .security-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .78rem;
+      color: var(--gray-500);
+    }
+
+    /* ── SETUP GUIDE ── */
+    .setup-guide {
+      margin-top: 48px;
+      background: var(--white);
+      border-radius: 16px;
+      border: 1px solid var(--gray-200);
+      overflow: hidden;
+    }
+    .guide-header {
+      background: var(--gray-900);
+      color: var(--white);
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .guide-header h3 { font-size: 1rem; font-weight: 700; }
+    .guide-header p  { font-size: .8rem; opacity: .6; margin-top: 2px; }
+    .guide-body { padding: 28px; }
+
+    .guide-steps { display: flex; flex-direction: column; gap: 24px; }
+    .guide-step { display: flex; gap: 16px; }
+    .step-num {
+      width: 32px; height: 32px;
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800;
+      font-size: .85rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-content h4 { font-size: .95rem; font-weight: 700; color: var(--gray-900); margin-bottom: 6px; }
+    .step-content p  { font-size: .85rem; color: var(--gray-500); line-height: 1.6; }
+    .step-content a  { color: var(--mp-blue); font-weight: 600; }
+
+    .code-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: 'Courier New', monospace;
+      font-size: .78rem;
+      line-height: 1.7;
+      margin-top: 12px;
+      overflow-x: auto;
+    }
+    .code-block .comment { color: #64748b; }
+    .code-block .key     { color: #93c5fd; }
+    .code-block .val     { color: #86efac; }
+    .code-block .str     { color: #fde68a; }
+
+    .tip-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: .82rem;
+      color: #1e40af;
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .zapier-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .zf-step {
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      text-align: center;
+      flex: 1;
+      min-width: 120px;
+    }
+    .zf-step .zf-icon { font-size: 1.3rem; margin-bottom: 4px; }
+    .zf-arrow { font-size: 1.2rem; color: var(--gray-500); flex-shrink: 0; }
+
+    @media(max-width:680px){
+      .checkout-grid { grid-template-columns: 1fr; }
+      .zapier-flow { flex-direction: column; }
+      .zf-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  🔒 Compra 100% segura · <strong>R$9,90</strong> pagamento único · Entrega imediata por e-mail
+</div>
+
+<div class="checkout-header">
+  <div class="logo">
+    <div class="logo-icon">💰</div>
+    Controle Financeiro
+  </div>
+  <div class="secure-badge">🔒 SSL Seguro &nbsp;·&nbsp; Mercado Pago</div>
+</div>
+
+<div class="checkout-body">
+
+  <!-- TÍTULO -->
+  <div style="text-align:center;margin-bottom:32px">
+    <h1 style="font-size:1.5rem;font-weight:800;color:var(--gray-900);margin-bottom:6px">Finalizar Pedido</h1>
+    <p style="color:var(--gray-500);font-size:.9rem">Você está a um passo de organizar suas finanças</p>
+  </div>
+
+  <div class="checkout-grid">
+
+    <!-- ORDER SUMMARY -->
+    <div class="order-card">
+      <div class="order-header">
+        <h2>📋 Resumo do Pedido</h2>
+        <p>Revise o que você está adquirindo</p>
+      </div>
+      <div class="order-body">
+        <div class="product-row">
+          <div class="product-icon">📊</div>
+          <div>
+            <div class="product-name">Planilha de Controle de Gastos e Investimento</div>
+            <div class="product-desc">Dashboard + Investimentos + Metas · 8 abas · Formato .xlsx</div>
+          </div>
+          <div class="product-price">
+            <div class="price-strike">R$29,90</div>
+            <div class="price-final">R$9,90</div>
+          </div>
+        </div>
+
+        <div class="includes-list">
+          <div class="include-item">Dashboard visual com gráficos automáticos</div>
+          <div class="include-item">Controle de despesas por categoria</div>
+          <div class="include-item">Carteira de investimentos completa</div>
+          <div class="include-item">Rastreador de metas financeiras</div>
+          <div class="include-item">Comparativo anual e dados mensais</div>
+          <div class="include-item">Acesso vitalício + atualizações grátis</div>
+        </div>
+
+        <div class="price-total">
+          <div class="price-row">
+            <span>Subtotal</span>
+            <span>R$29,90</span>
+          </div>
+          <div class="price-row" style="color:var(--green-dk)">
+            <span>Desconto <span class="discount-badge">-67%</span></span>
+            <span>- R$20,00</span>
+          </div>
+          <div class="price-row total">
+            <span>Total</span>
+            <span style="color:var(--green-dk)">R$9,90</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT -->
+    <div class="payment-card">
+      <div class="payment-header">
+        <h3>💳 Escolha como pagar</h3>
+      </div>
+      <div class="payment-body">
+
+        <!-- ⚠️ INSTRUÇÕES: Substitua o href abaixo pelo seu link de pagamento do Mercado Pago -->
+        <!-- Para gerar o link: acesse mercadopago.com.br → Cobranças → Link de pagamento -->
+        <a href="https://link.mercadopago.com.br/SEU-LINK-AQUI" class="mp-btn" id="btnMercadoPago">
+          <svg class="mp-logo" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg">
+            <text x="0" y="22" font-family="Arial" font-weight="bold" font-size="18" fill="white">Mercado Pago</text>
+          </svg>
+          Pagar com Mercado Pago
+        </a>
+
+        <div class="divider">ou pague com Pix</div>
+
+        <!-- ⚠️ INSTRUÇÕES: Substitua o href pelo seu link de Pix do Mercado Pago -->
+        <button class="pix-btn" onclick="alert('Configure seu link Pix no Mercado Pago e substitua este botão.')">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L14.5 9.5H22L16 14L18.5 21.5L12 17L5.5 21.5L8 14L2 9.5H9.5L12 2Z" fill="#00a859"/>
+          </svg>
+          Pagar com Pix (R$9,90)
+        </button>
+
+        <div class="payment-methods">
+          <span class="pm-icon">Visa</span>
+          <span class="pm-icon">Master</span>
+          <span class="pm-icon">Elo</span>
+          <span class="pm-icon">Pix</span>
+          <span class="pm-icon">Boleto</span>
+        </div>
+
+        <div class="security-row">
+          <div class="security-item">🔒 Pagamento criptografado SSL 256-bit</div>
+          <div class="security-item">📧 Receba o arquivo em até 5 minutos</div>
+          <div class="security-item">↩️ <a href="index.html" style="color:var(--mp-blue)">← Voltar à página inicial</a></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /checkout-grid -->
+
+  <!-- ══════ GUIA DE CONFIGURAÇÃO ══════ -->
+  <div class="setup-guide">
+    <div class="guide-header">
+      <div>
+        <h3>⚙️ Guia de Configuração — Mercado Pago + Envio Automático de E-mail</h3>
+        <p>Siga os passos abaixo para colocar tudo funcionando automaticamente. Não precisa programar.</p>
+      </div>
+    </div>
+    <div class="guide-body">
+      <div class="guide-steps">
+
+        <!-- PASSO 1 -->
+        <div class="guide-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Crie sua conta de vendedor no Mercado Pago</h4>
+            <p>Acesse <a href="https://www.mercadopago.com.br" target="_blank">mercadopago.com.br</a> → crie uma conta como pessoa física ou jurídica → complete a verificação de identidade. Isso leva cerca de 10 minutos.</p>
+            <div class="tip-box">💡 <span>Use o mesmo CPF/CNPJ que você usará para receber os pagamentos. O dinheiro cai direto na conta do Mercado Pago e você transfere quando quiser.</span></div>
+          </div>
+        </div>
+
+        <!-- PASSO 2 -->
+        <div class="guide-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Crie o Link de Pagamento (sem precisar programar)</h4>
+            <p>No painel do Mercado Pago: <strong>Cobranças → Link de pagamento → Criar link</strong>. Configure assim:</p>
+            <div class="code-block">
+<span class="comment">// Configure desta forma no formulário do Mercado Pago:</span>
+<span class="key">Nome do produto:</span> <span class="str">"Planilha de Controle de Gastos e Investimento"</span>
+<span class="key">Preço:</span>           <span class="val">R$ 9,90</span>
+<span class="key">Descrição:</span>       <span class="str">"Dashboard + Investimentos + Metas - 8 abas"</span>
+<span class="key">Tipo:</span>            <span class="str">Produto digital (único pagamento)</span>
+<span class="key">URL de retorno:</span>  <span class="str">https://SEU-SITE.github.io/obrigado.html</span>
+            </div>
+            <p style="margin-top:10px">Copie o link gerado e substitua no botão <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.8rem">href="..."</code> deste arquivo <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.8rem">checkout.html</code>.</p>
+          </div>
+        </div>
+
+        <!-- PASSO 3 -->
+        <div class="guide-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Configure o envio automático do arquivo por e-mail (via Zapier — grátis)</h4>
+            <p>O Zapier conecta o Mercado Pago ao Gmail/Outlook e envia o e-mail com o arquivo automaticamente após cada venda confirmada:</p>
+
+            <div class="zapier-flow">
+              <div class="zf-step">
+                <div class="zf-icon">🛒</div>
+                Mercado Pago<br/><small style="color:var(--gray-500);font-weight:400">Novo pagamento aprovado</small>
+              </div>
+              <div class="zf-arrow">→</div>
+              <div class="zf-step">
+                <div class="zf-icon">⚡</div>
+                Zapier<br/><small style="color:var(--gray-500);font-weight:400">Automatiza a ação</small>
+              </div>
+              <div class="zf-arrow">→</div>
+              <div class="zf-step">
+                <div class="zf-icon">📧</div>
+                Gmail<br/><small style="color:var(--gray-500);font-weight:400">Envia o arquivo</small>
+              </div>
+            </div>
+
+            <div class="code-block" style="margin-top:16px">
+<span class="comment">// Como configurar no Zapier (zapier.com — gratuito até 100 tarefas/mês):</span>
+
+<span class="key">1.</span> Crie uma conta em <span class="str">zapier.com</span>
+<span class="key">2.</span> Clique em <span class="str">"Create Zap"</span>
+<span class="key">3.</span> TRIGGER: escolha <span class="str">"Mercado Pago"</span> → evento <span class="str">"New Payment"</span>
+   → conecte sua conta MP → filtre por <span class="val">status = "approved"</span>
+
+<span class="key">4.</span> ACTION: escolha <span class="str">"Gmail"</span> → ação <span class="str">"Send Email"</span>
+   → configure o e-mail assim:
+
+   <span class="key">Para:</span>      <span class="val">{{payment.payer.email}}</span>  (e-mail do comprador)
+   <span class="key">Assunto:</span>   <span class="str">"✅ Sua Planilha Chegou! Acesse Agora"</span>
+   <span class="key">Corpo:</span>     <span class="str">"Olá {{payment.payer.name}}! Seu pagamento foi confirmado.
+              Baixe sua planilha aqui: [LINK DO GOOGLE DRIVE]"</span>
+
+<span class="key">5.</span> Teste e ative o Zap ✓
+            </div>
+
+            <div class="tip-box" style="margin-top:12px">
+              💡 <span><strong>Onde hospedar o arquivo:</strong> Suba o arquivo .xlsx no <a href="https://drive.google.com" target="_blank">Google Drive</a> → clique com o botão direito → "Compartilhar" → "Qualquer pessoa com o link". Copie o link e coloque no e-mail acima.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PASSO 4 -->
+        <div class="guide-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Publique o site no GitHub Pages (gratuito)</h4>
+            <p>O GitHub Pages hospeda seu site de forma gratuita com URL no formato <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.8rem">https://SEU-USUARIO.github.io/SEU-REPOSITORIO</code>:</p>
+            <div class="code-block">
+<span class="comment">// Passo a passo para publicar no GitHub Pages:</span>
+
+<span class="key">1.</span> Crie uma conta em <span class="str">github.com</span>
+<span class="key">2.</span> Clique em <span class="str">"New Repository"</span> → nomeie como <span class="val">finanControl</span>
+<span class="key">3.</span> Faça upload dos arquivos:
+   → <span class="val">index.html</span>
+   → <span class="val">checkout.html</span>
+   → <span class="val">obrigado.html</span> (página pós-compra)
+
+<span class="key">4.</span> Vá em <span class="str">Settings → Pages</span>
+<span class="key">5.</span> Em "Source", selecione <span class="val">main branch → / (root)</span>
+<span class="key">6.</span> Clique <span class="str">"Save"</span> — em ~2 minutos seu site estará no ar!
+
+<span class="comment">// URL final: https://SEU-USUARIO.github.io/finanControl</span>
+            </div>
+            <div class="tip-box">
+              💡 <span><strong>Domínio personalizado (opcional):</strong> Se quiser usar seu próprio domínio (ex: planilhafinanceiro.com.br), compre no <a href="https://registro.br" target="_blank">registro.br</a> (~R$40/ano) e configure em Settings → Pages → Custom Domain.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PASSO 5 -->
+        <div class="guide-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>Crie a página de "Obrigado" (pós-compra)</h4>
+            <p>O Mercado Pago redireciona o comprador para uma URL após o pagamento. Crie um arquivo <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.8rem">obrigado.html</code> com a mensagem de confirmação e reforce que o arquivo chegará por e-mail em até 5 minutos.</p>
+            <div class="tip-box" style="background:#f0fdf4;border-color:#bbf7d0;color:#166534">
+              ✅ <span><strong>Fluxo completo funcionando:</strong> Cliente compra → Mercado Pago processa → Zapier detecta pagamento aprovado → Gmail envia e-mail com o link do arquivo automaticamente. Tudo sem você precisar fazer nada manualmente!</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /guide-steps -->
+    </div>
+  </div><!-- /setup-guide -->
+
+</div><!-- /checkout-body -->
+
+<!-- FOOTER -->
+<footer style="text-align:center;padding:32px;color:var(--gray-500);font-size:.8rem;border-top:1px solid var(--gray-200);margin-top:48px">
+  <p>© 2026 Controle Financeiro · <a href="index.html" style="color:var(--mp-blue)">Voltar ao site</a></p>
+  <p style="margin-top:6px">Dúvidas? Entre em contato: <strong>paulo.dendena@gmail.com</strong></p>
+</footer>
+
+</body>
+</html>
